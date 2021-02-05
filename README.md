@@ -1,16 +1,25 @@
 # Go Agenda
-
 >A Application that provides a way to keep track of your life
 
 ## Technologies
-The project was developed using Golang.
+The project was developed using Golang,
 
 ## Dependencies
 * gorilla/mux
 > go get -u github.com/gorilla/mux
 
-* Logrus
+* logrus
 > go get -u github.com/sirupsen/logrus
+
+* gorm
+> go get -u github.com/jinzhu/gorm
+
+* Mysql driver
+> go get -u github.com/go-sql-driver/mysql
+
+* Mysql dialects
+> go get -u github.com/jinzhu/gorm/dialects/mysql
+
 ## Testing
 
 * runing agenda
@@ -18,7 +27,7 @@ The project was developed using Golang.
 $ go run agenda.go
 ```
 
-* clienting
+* testing heath
 ```bash
 $ curl -i localhost:8000/healthz
 ```
@@ -30,22 +39,8 @@ $ curl -i localhost:8000/healthz
 * 
 > 
 
-## Deploy
+## Creating database
+* Launch a MySQL container  
+> docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root mysql
 
-* 
-
-```bash
-$ 
-```
-* 
-```bash
-$ 
-```
-* 
-```bash
-$ 
-```
-* 
-```bash
-$ 
-```
+> docker exec -it mysql mysql -uroot -proot -e 'CREATE DATABASE agenda'
