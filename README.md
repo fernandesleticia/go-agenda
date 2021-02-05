@@ -25,8 +25,8 @@ $ curl -i localhost:8000/healthz
 
 ## Endpoints
 
-* 
-> 
+* check health
+> /healthz
 * 
 > 
 

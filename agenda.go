@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,4 +21,7 @@ func init() {
 
 func main() {
 	log.Info("Starting agenda")
+	router := mux.NewRouter()
+	router.HandleFunc("/healthz", Healthz).Methods("GET")
+	http.ListenAndServe(":8000", router)
 }
