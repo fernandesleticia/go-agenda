@@ -13,6 +13,12 @@ import (
 
 var db, _ = gorm.Open("mysql", "root:root@/agenda?charset=utf8&parseTime=True&loc=Local")
 
+type AgendaItemModel struct {
+	Id          int `gorm:primary_key`
+	Description string
+	Done        bool
+}
+
 func Healthz(w http.ResponseWriter, r *http.Request) {
 	log.Info("All good with Agenda API")
 	w.Header().Set("Content-Type", "application/json")
@@ -26,6 +32,9 @@ func init() {
 
 func main() {
 	defer db.Close()
+
+	db.Debug().DropTableIfExists(&AgendaItemModel{})
+	db.Debug().AutoMigrate(&AgendaItemModel{})
 
 	log.Info("Starting agenda")
 	router := mux.NewRouter()
