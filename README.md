@@ -20,18 +20,6 @@ The project was developed using Golang,
 * Mysql dialects
 > go get -u github.com/jinzhu/gorm/dialects/mysql
 
-## Testing
-
-* runing agenda
-```bash
-$ go run agenda.go
-```
-
-* testing heath
-```bash
-$ curl -i localhost:8000/healthz
-```
-
 ## Endpoints
 
 * check health
@@ -45,3 +33,20 @@ $ curl -i localhost:8000/healthz
 > docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root mysql
 
 > docker exec -it mysql mysql -uroot -proot -e 'CREATE DATABASE agenda'
+
+## Testing
+
+* runing agenda
+```bash
+$ go run agenda.go
+```
+
+* checking heath
+```bash
+$ curl -i localhost:8000/healthz
+```
+
+* creatig a item
+```bash
+curl -X POST -d "description=buy apples" localhost:8000/item
+```
