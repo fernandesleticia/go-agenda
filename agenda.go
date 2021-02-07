@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 
@@ -30,6 +31,16 @@ func init() {
 	log.SetReportCaller(true)
 }
 
+func CreateItem(w http.ResponseWriter, r *http.Request) {
+	description := r.FormValue("description")
+	log.WithFields(log.Fields{"description": description}).Info("Add a new item")
+	agenda_item := &AgendaItemModel{Description: description, Done: false}
+	db.Create(&agenda_item)
+	result := db.Last(&agenda_item)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result.Value)
+}
+
 func main() {
 	defer db.Close()
 
@@ -39,5 +50,6 @@ func main() {
 	log.Info("Starting agenda")
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", Healthz).Methods("GET")
+	router.HandleFunc("/item", CreateItem).Methods("POST")
 	http.ListenAndServe(":8000", router)
 }

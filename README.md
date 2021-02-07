@@ -36,8 +36,9 @@ $ curl -i localhost:8000/healthz
 
 * check health
 > /healthz
-* 
-> 
+
+* create a item for the todo list
+> /item
 
 ## Creating database
 * Launch a MySQL container  
