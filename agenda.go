@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -39,6 +40,27 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
 	result := db.Last(&agenda_item)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result.Value)
+}
+
+func UpdateItem(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
+	err := GetItemByID(id)
+	if err == false {
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"updated": false, "error": Recorde Not Found}`)
+	} else {
+		completed, _ := strconv.ParseBool(r.FormValue("completed"))
+		log.WithFields(log.Fields{"Id": id, "Completed": completed}).Info("Updating item")
+		item := &AgendaItemModel{}
+		db.First(&item, id)
+		item.Completed = completed
+		db.Save(&item)
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"updated": true}`)
+	}
+
 }
 
 func main() {
