@@ -46,21 +46,31 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
-	err := GetItemByID(id)
-	if err == false {
+	has_item := GetItemByID(id)
+	if has_item == false {
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, `{"updated": false, "error": Recorde Not Found}`)
 	} else {
-		completed, _ := strconv.ParseBool(r.FormValue("completed"))
-		log.WithFields(log.Fields{"Id": id, "Completed": completed}).Info("Updating item")
+		done, _ := strconv.ParseBool(r.FormValue("done"))
+		log.WithFields(log.Fields{"Id": id, "Done": done}).Info("Updating item")
 		item := &AgendaItemModel{}
 		db.First(&item, id)
-		item.Completed = completed
+		item.Done = done
 		db.Save(&item)
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, `{"updated": true}`)
 	}
+}
 
+func GetItemByID(Id int) bool {
+	item := &AgendaItemModel{}
+	result := db.First(&item, Id)
+	if result.Error != nil {
+		log.Warn("Item not found in database")
+		return false
+
+	}
+	return true
 }
 
 func main() {
@@ -73,5 +83,6 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", Healthz).Methods("GET")
 	router.HandleFunc("/item", CreateItem).Methods("POST")
+	router.HandleFunc("/update/{id}", UpdateItem).Methods("POST")
 	http.ListenAndServe(":8000", router)
 }

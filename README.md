@@ -1,5 +1,5 @@
 # Go Agenda
->A Application that provides a way to keep track of your life
+>An Application that provides a way to keep track of your life
 
 ## Technologies
 The project was developed using Golang,
@@ -25,7 +25,7 @@ The project was developed using Golang,
 * check health
 > /healthz
 
-* create a item for the todo list
+* create an item for the todo list
 > /item
 
 ## Creating database
@@ -46,7 +46,12 @@ $ go run agenda.go
 $ curl -i localhost:8000/healthz
 ```
 
-* creatig a item
+* creating an item
 ```bash
 curl -X POST -d "description=buy apples" localhost:8000/item
+```
+
+* updating an item
+```bash
+curl -X POST -d "done=true" localhost:8000/update/1
 ```
