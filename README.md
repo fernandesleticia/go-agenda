@@ -55,3 +55,8 @@ curl -X POST -d "description=buy apples" localhost:8000/item
 ```bash
 curl -X POST -d "done=true" localhost:8000/update/1
 ```
+
+* deleting an item
+```bash
+curl -X DELETE localhost:8000/delete/1
+```

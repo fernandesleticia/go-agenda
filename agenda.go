@@ -62,6 +62,25 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DeleteItem(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
+	has_item := GetItemByID(id)
+	if has_item == false {
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"deleted": false, "error": "Record not found"}`)
+	} else {
+		log.WithFields(log.Fields{"Id": id}).Info("Deleting item")
+		item := &AgendaItemModel{}
+		db.First(&item, id)
+		db.Delete(&item)
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"deleted": true}`)
+	}
+
+}
+
 func GetItemByID(Id int) bool {
 	item := &AgendaItemModel{}
 	result := db.First(&item, Id)
@@ -84,5 +103,6 @@ func main() {
 	router.HandleFunc("/healthz", Healthz).Methods("GET")
 	router.HandleFunc("/item", CreateItem).Methods("POST")
 	router.HandleFunc("/update/{id}", UpdateItem).Methods("POST")
+	router.HandleFunc("/delete/{id}", DeleteItem).Methods("DELETE")
 	http.ListenAndServe(":8000", router)
 }
