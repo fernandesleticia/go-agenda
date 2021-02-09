@@ -92,6 +92,26 @@ func GetItemByID(Id int) bool {
 	return true
 }
 
+func GetDoneItems(w http.ResponseWriter, r *http.Request) {
+	log.Info("Getting done items")
+	done_items := GetItemsWith(true)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(done_items)
+}
+
+func GetPendingItems(w http.ResponseWriter, r *http.Request) {
+	log.Info("Getting pending items")
+	pending_items := GetItemsWith(false)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(pending_items)
+}
+
+func GetItemsWith(done bool) interface{} {
+	var items []AgendaItemModel
+	AgendaItems := db.Where("done = ?", done).Find(&items).Value
+	return AgendaItems
+}
+
 func main() {
 	defer db.Close()
 
@@ -104,5 +124,7 @@ func main() {
 	router.HandleFunc("/item", CreateItem).Methods("POST")
 	router.HandleFunc("/update/{id}", UpdateItem).Methods("POST")
 	router.HandleFunc("/delete/{id}", DeleteItem).Methods("DELETE")
+	router.HandleFunc("/done", GetDoneItems).Methods("GET")
+	router.HandleFunc("/pending", GetPendingItems).Methods("GET")
 	http.ListenAndServe(":8000", router)
 }

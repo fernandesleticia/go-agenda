@@ -20,14 +20,6 @@ The project was developed using Golang,
 * Mysql dialects
 > go get -u github.com/jinzhu/gorm/dialects/mysql
 
-## Endpoints
-
-* check health
-> /healthz
-
-* create an item for the todo list
-> /item
-
 ## Creating database
 * Launch a MySQL container  
 > docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root mysql
@@ -48,15 +40,25 @@ $ curl -i localhost:8000/healthz
 
 * creating an item
 ```bash
-curl -X POST -d "description=buy apples" localhost:8000/item
+$ curl -X POST -d "description=buy apples" localhost:8000/item
 ```
 
 * updating an item
 ```bash
-curl -X POST -d "done=true" localhost:8000/update/1
+$ curl -X POST -d "done=true" localhost:8000/update/1
 ```
 
 * deleting an item
 ```bash
-curl -X DELETE localhost:8000/delete/1
+$ curl -X DELETE localhost:8000/delete/1
+```
+
+* getting done items
+```bash
+$ curl -X GET localhost:8000/done
+```
+
+* getting pending items
+```bash
+$ curl -X GET localhost:8000/pending
 ```
