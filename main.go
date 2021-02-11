@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	_ "github.com/fernandesleticia/go-agenda/database"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -14,12 +16,6 @@ import (
 )
 
 var db, _ = gorm.Open("mysql", "root:root@/agenda?charset=utf8&parseTime=True&loc=Local")
-
-type AgendaItemModel struct {
-	Id          int `gorm:primary_key`
-	Description string
-	Done        bool
-}
 
 func Healthz(w http.ResponseWriter, r *http.Request) {
 	log.Info("All good with Agenda API")
