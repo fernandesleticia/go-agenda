@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
-	"strconv"
 
 	"github.com/fernandesleticia/go-agenda/models"
 
@@ -28,76 +26,6 @@ func init() {
 	log.SetReportCaller(true)
 }
 
-func UpdateItem(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
-
-	has_item := GetItemByID(id)
-	if has_item == false {
-		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, `{"updated": false, "error": Recorde Not Found}`)
-	} else {
-		done, _ := strconv.ParseBool(r.FormValue("done"))
-		log.WithFields(log.Fields{"Id": id, "Done": done}).Info("Updating item")
-		item := &models.Item{}
-		db.First(&item, id)
-		item.Done = done
-		db.Save(&item)
-		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, `{"updated": true}`)
-	}
-}
-
-func DeleteItem(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
-
-	has_item := GetItemByID(id)
-	if has_item == false {
-		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, `{"deleted": false, "error": "Record not found"}`)
-	} else {
-		log.WithFields(log.Fields{"Id": id}).Info("Deleting item")
-		item := &models.Item{}
-		db.First(&item, id)
-		db.Delete(&item)
-		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, `{"deleted": true}`)
-	}
-
-}
-
-func GetItemByID(Id int) bool {
-	item := &models.Item{}
-	result := db.First(&item, Id)
-	if result.Error != nil {
-		log.Warn("Item not found in models")
-		return false
-
-	}
-	return true
-}
-
-func GetDoneItems(w http.ResponseWriter, r *http.Request) {
-	log.Info("Getting done items")
-	done_items := GetItemsWith(true)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(done_items)
-}
-
-func GetPendingItems(w http.ResponseWriter, r *http.Request) {
-	log.Info("Getting pending items")
-	pending_items := GetItemsWith(false)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(pending_items)
-}
-
-func GetItemsWith(done bool) interface{} {
-	var items []models.Item
-	Items := db.Where("done = ?", done).Find(&items).Value
-	return Items
-}
-
 func main() {
 	defer db.Close()
 
@@ -108,9 +36,9 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", Healthz).Methods("GET")
 	router.HandleFunc("/item", models.CreateItem).Methods("POST")
-	router.HandleFunc("/update/{id}", UpdateItem).Methods("POST")
-	router.HandleFunc("/delete/{id}", DeleteItem).Methods("DELETE")
-	router.HandleFunc("/done", GetDoneItems).Methods("GET")
-	router.HandleFunc("/pending", GetPendingItems).Methods("GET")
+	router.HandleFunc("/update/{id}", models.UpdateItem).Methods("POST")
+	router.HandleFunc("/delete/{id}", models.DeleteItem).Methods("DELETE")
+	router.HandleFunc("/done", models.GetDoneItems).Methods("GET")
+	router.HandleFunc("/pending", models.GetPendingItems).Methods("GET")
 	http.ListenAndServe(":8000", router)
 }
