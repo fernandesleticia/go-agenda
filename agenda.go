@@ -28,16 +28,6 @@ func init() {
 	log.SetReportCaller(true)
 }
 
-func CreateItem(w http.ResponseWriter, r *http.Request) {
-	description := r.FormValue("description")
-	log.WithFields(log.Fields{"description": description}).Info("Add a new item")
-	item := &models.Item{Description: description, Done: false}
-	db.Create(&item)
-	result := db.Last(&item)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result.Value)
-}
-
 func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
@@ -117,7 +107,7 @@ func main() {
 	log.Info("Starting agenda")
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", Healthz).Methods("GET")
-	router.HandleFunc("/item", CreateItem).Methods("POST")
+	router.HandleFunc("/item", models.CreateItem).Methods("POST")
 	router.HandleFunc("/update/{id}", UpdateItem).Methods("POST")
 	router.HandleFunc("/delete/{id}", DeleteItem).Methods("DELETE")
 	router.HandleFunc("/done", GetDoneItems).Methods("GET")
