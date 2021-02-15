@@ -4,16 +4,14 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/fernandesleticia/go-agenda/database"
 	"github.com/fernandesleticia/go-agenda/models"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	log "github.com/sirupsen/logrus"
 )
-
-var db, _ = gorm.Open("mysql", "root:root@/agenda?charset=utf8&parseTime=True&loc=Local")
 
 func Healthz(w http.ResponseWriter, r *http.Request) {
 	log.Info("All good with Agenda API")
@@ -27,10 +25,10 @@ func init() {
 }
 
 func main() {
-	defer db.Close()
+	defer database.MysqlInstance.Close()
 
-	db.Debug().DropTableIfExists(&models.Item{})
-	db.Debug().AutoMigrate(&models.Item{})
+	database.MysqlInstance.Debug().DropTableIfExists(&models.Item{})
+	database.MysqlInstance.Debug().AutoMigrate(&models.Item{})
 
 	log.Info("Starting agenda")
 	router := mux.NewRouter()
