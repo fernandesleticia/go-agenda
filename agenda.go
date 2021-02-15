@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/fernandesleticia/go-agenda/controllers"
 	"github.com/fernandesleticia/go-agenda/database"
 	"github.com/fernandesleticia/go-agenda/models"
 
@@ -33,10 +34,10 @@ func main() {
 	log.Info("Starting agenda")
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", Healthz).Methods("GET")
-	router.HandleFunc("/item", models.CreateItem).Methods("POST")
-	router.HandleFunc("/update/{id}", models.UpdateItem).Methods("POST")
-	router.HandleFunc("/delete/{id}", models.DeleteItem).Methods("DELETE")
-	router.HandleFunc("/done", models.GetDoneItems).Methods("GET")
-	router.HandleFunc("/pending", models.GetPendingItems).Methods("GET")
+	router.HandleFunc("/item", controllers.CreateItem).Methods("POST")
+	router.HandleFunc("/update/{id}", controllers.UpdateItem).Methods("POST")
+	router.HandleFunc("/delete/{id}", controllers.DeleteItem).Methods("DELETE")
+	router.HandleFunc("/done", controllers.GetDoneItems).Methods("GET")
+	router.HandleFunc("/pending", controllers.GetPendingItems).Methods("GET")
 	http.ListenAndServe(":8000", router)
 }
