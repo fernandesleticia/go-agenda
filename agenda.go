@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	_ "github.com/fernandesleticia/go-agenda/database"
+	"github.com/fernandesleticia/go-agenda/database"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -31,9 +31,9 @@ func init() {
 func CreateItem(w http.ResponseWriter, r *http.Request) {
 	description := r.FormValue("description")
 	log.WithFields(log.Fields{"description": description}).Info("Add a new item")
-	agenda_item := &AgendaItemModel{Description: description, Done: false}
-	db.Create(&agenda_item)
-	result := db.Last(&agenda_item)
+	item := &database.Item{Description: description, Done: false}
+	db.Create(&item)
+	result := db.Last(&item)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result.Value)
 }
@@ -49,7 +49,7 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	} else {
 		done, _ := strconv.ParseBool(r.FormValue("done"))
 		log.WithFields(log.Fields{"Id": id, "Done": done}).Info("Updating item")
-		item := &AgendaItemModel{}
+		item := &database.Item{}
 		db.First(&item, id)
 		item.Done = done
 		db.Save(&item)
@@ -68,7 +68,7 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, `{"deleted": false, "error": "Record not found"}`)
 	} else {
 		log.WithFields(log.Fields{"Id": id}).Info("Deleting item")
-		item := &AgendaItemModel{}
+		item := &database.Item{}
 		db.First(&item, id)
 		db.Delete(&item)
 		w.Header().Set("Content-Type", "application/json")
@@ -78,7 +78,7 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetItemByID(Id int) bool {
-	item := &AgendaItemModel{}
+	item := &database.Item{}
 	result := db.First(&item, Id)
 	if result.Error != nil {
 		log.Warn("Item not found in database")
@@ -103,16 +103,16 @@ func GetPendingItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetItemsWith(done bool) interface{} {
-	var items []AgendaItemModel
-	AgendaItems := db.Where("done = ?", done).Find(&items).Value
-	return AgendaItems
+	var items []database.Item
+	Items := db.Where("done = ?", done).Find(&items).Value
+	return Items
 }
 
 func main() {
 	defer db.Close()
 
-	db.Debug().DropTableIfExists(&AgendaItemModel{})
-	db.Debug().AutoMigrate(&AgendaItemModel{})
+	db.Debug().DropTableIfExists(&database.Item{})
+	db.Debug().AutoMigrate(&database.Item{})
 
 	log.Info("Starting agenda")
 	router := mux.NewRouter()
