@@ -77,20 +77,6 @@ func GetItemByID(Id int) bool {
 	return true
 }
 
-func GetDoneItems(w http.ResponseWriter, r *http.Request) {
-	log.Info("Getting done items")
-	done_items := GetItemsWith(true)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(done_items)
-}
-
-func GetPendingItems(w http.ResponseWriter, r *http.Request) {
-	log.Info("Getting pending items")
-	pending_items := GetItemsWith(false)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(pending_items)
-}
-
 func GetItemsWith(done bool) interface{} {
 	var items []Item
 	Items := database.MysqlInstance.Where("done = ?", done).Find(&items).Value
