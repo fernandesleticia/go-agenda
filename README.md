@@ -1,5 +1,5 @@
 # Go Agenda
->An Application that provides a smart way to keep track of your life
+>An Smart Application that provides a smart way to keep track of your life
 
 ## Technologies
 The project was developed using Golang,
