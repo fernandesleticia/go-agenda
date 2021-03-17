@@ -12,6 +12,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type ItemUsecase interface {
+	CreateItem(description string, done bool) ([]*models.Item, error)
+	UpdateItem(id int, done bool) ([]*models.Item, error)
+	DeleteItem(id int) ([]*models.Item, error)
+	GetDoneItems() (bool, error)
+	GetPendingItems() (bool, error)
+}
+
 func CreateItem(description string, done bool) result {
 	item := &models.Item{Description: description, Done: done}
 	database.MysqlInstance.Create(&item)
