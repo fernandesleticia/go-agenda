@@ -13,14 +13,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type ItemHandler interface {
-	CreateItem(description string, done bool) ([]*models.Item, error)
-	UpdateItem(id int, done bool) ([]*models.Item, error)
-	DeleteItem(id int) ([]*models.Item, error)
-	GetDoneItems() (bool, error)
-	GetPendingItems() (bool, error)
-}
-
 func CreateItem(w http.ResponseWriter, r *http.Request) {
 	description := r.FormValue("description")
 	log.WithFields(log.Fields{"description": description}).Info("Adding a new item")
