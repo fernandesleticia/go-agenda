@@ -19,9 +19,12 @@ func TestCreateItem(t *testing.T) {
 	query := "SELECT id, Description, Done FROM items WHERE id=\\?"
 
 	prep := mock.ExpectPrepare(query)
-	userID := int64(1)
-	prep.ExpectQuery().WithArgs(userID).WillReturnRows(rows)
+	uitemID := int64(1)
+	prep.ExpectQuery().WithArgs(itemID).WillReturnRows(rows)
 
 	a := database.MysqlInstance
-
+    
+	anItem, err := a.GetItemByID(num)  
+	assert.NoError(t, err) 
+	assert.NotNil(t, anArticle)
 }
